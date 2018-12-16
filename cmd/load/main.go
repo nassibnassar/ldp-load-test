@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 )
 
 // Loan specifies a loan transaction.
@@ -29,8 +28,9 @@ func LoadLoans(r io.Reader, db *sql.DB) error {
 		return err
 	}
 
-	stmt, err := txn.Prepare(pq.CopyIn(
-		"loans", "id", "user_id", "loan_date"))
+	stmt, err := txn.Prepare(pq.CopyInSchema(
+		"public", "loans",
+		"id", "user_id", "loan_date"))
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func LoadLoans(r io.Reader, db *sql.DB) error {
 		}
 	}
 
-	// Read array elements.
+	// Read and load array elements.
 	for dec.More() {
 		var l Loan
 		err := dec.Decode(&l)
@@ -96,6 +96,7 @@ func LoadLoanFile(jsonFilename string, db *sql.DB) error {
 	return nil
 }
 
+// OpenDatabase opens a new database connection.
 func OpenDatabase(host, port, user, password, dbname string) (*sql.DB, error) {
 
 	connStr := fmt.Sprintf(
