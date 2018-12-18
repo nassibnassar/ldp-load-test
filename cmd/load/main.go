@@ -130,40 +130,6 @@ func loadLoansCopy(r io.Reader, db *sql.DB) error {
 	return nil
 }
 
-/*
-func loadLoansInsert(r io.Reader, db *sql.DB) error {
-
-	dec := json.NewDecoder(r)
-
-	// Skip past first tokens.
-	for x := 0; x < 3; x++ {
-		_, err := dec.Token()
-		if err != nil {
-			return err
-		}
-	}
-
-	// Read and load array elements.
-	for dec.More() {
-		var l loan
-		err := dec.Decode(&l)
-		if err != nil {
-			return err
-		}
-
-		_, err = db.Exec(
-			"insert into loans (id, user_id, loan_date) "+
-				"values ($1, $2, $3)",
-			l.Id, l.UserId, l.LoanDate)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-*/
-
 type loan struct {
 	Id       string `json:"id,omitempty"`
 	UserId   string `json:"userId,omitempty"`
