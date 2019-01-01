@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-	sourceDir := "/Users/nassib/tmp/20181214_043055"
 
 	db, err := openDatabase(
 		"localhost", "5432", "okapi", "okapi25", "okapi")
@@ -21,16 +20,10 @@ func main() {
 	}
 	defer db.Close()
 
-	for x := 1; x <= 20; x++ {
-		jsonFilename := sourceDir +
-			fmt.Sprintf("/loan-storage.loans.json.%v", x)
-		fmt.Printf("%v\n", jsonFilename)
-
-		err := loadLoanFile(jsonFilename, db)
-		if err != nil {
-			printError(err)
-			return
-		}
+	err = loadLoanStdin(db)
+	if err != nil {
+		printError(err)
+		return
 	}
 }
 
@@ -57,6 +50,16 @@ func printError(err error) {
 	fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
 }
 
+func loadLoanStdin(db *sql.DB) error {
+
+	err := loadLoansCopy(os.Stdin, db)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func loadLoanFile(jsonFilename string, db *sql.DB) error {
 
 	jsonFile, err := os.Open(jsonFilename)
@@ -66,7 +69,6 @@ func loadLoanFile(jsonFilename string, db *sql.DB) error {
 	defer jsonFile.Close()
 
 	err = loadLoansCopy(jsonFile, db)
-	//err = loadLoansInsert(jsonFile, db)
 	if err != nil {
 		return err
 	}
@@ -106,6 +108,7 @@ func loadLoansCopy(r io.Reader, db *sql.DB) error {
 			return err
 		}
 
+		fmt.Printf("%v %v %v\n", l.Id, l.UserId, l.LoanDate)
 		_, err = stmt.Exec(l.Id, l.UserId, l.LoanDate)
 		if err != nil {
 			return err
