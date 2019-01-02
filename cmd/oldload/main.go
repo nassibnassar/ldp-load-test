@@ -142,11 +142,7 @@ func loadLoansInsert(r io.Reader, db *sql.DB) error {
 		}
 	}
 
-	// Read
-	// and
-	// load
-	// array
-	// elements.
+	// Read and load array elements.
 	for dec.More() {
 		var l loan
 		err := dec.Decode(&l)
