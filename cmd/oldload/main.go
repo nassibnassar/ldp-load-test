@@ -14,7 +14,7 @@ func main() {
 	sourceDir := "/Users/nassib/tmp/20181214_043055"
 
 	db, err := openDatabase(
-		"localhost", "5432", "okapi", "okapi25", "okapi")
+		"localhost", "5432", "okapi", "okapi25", "ldp_okapi")
 	if err != nil {
 		printError(err)
 		return
@@ -65,8 +65,8 @@ func loadLoanFile(jsonFilename string, db *sql.DB) error {
 	}
 	defer jsonFile.Close()
 
-	err = loadLoansCopy(jsonFile, db)
-	//err = loadLoansInsert(jsonFile, db)
+	//err = loadLoansCopy(jsonFile, db)
+	err = loadLoansInsert(jsonFile, db)
 	if err != nil {
 		return err
 	}
@@ -125,6 +125,42 @@ func loadLoansCopy(r io.Reader, db *sql.DB) error {
 	err = txn.Commit()
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func loadLoansInsert(r io.Reader, db *sql.DB) error {
+
+	dec := json.NewDecoder(r)
+
+	// Skip past first tokens.
+	for x := 0; x < 3; x++ {
+		_, err := dec.Token()
+		if err != nil {
+			return err
+		}
+	}
+
+	// Read
+	// and
+	// load
+	// array
+	// elements.
+	for dec.More() {
+		var l loan
+		err := dec.Decode(&l)
+		if err != nil {
+			return err
+		}
+
+		_, err = db.Exec(
+			"insert into loans (id, user_id, loan_date) "+
+				"values ($1, $2, $3)",
+			l.Id, l.UserId, l.LoanDate)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
