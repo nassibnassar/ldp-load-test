@@ -27,6 +27,7 @@ func login() (string, error) {
 
 	m := map[string]string{
 		"username": "diku_admin",
+		//"username": "admin",
 		"password": "admin",
 	}
 	json, err := json.Marshal(m)
@@ -57,7 +58,8 @@ func retrieveLoans(token string) error {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET",
-		"http://localhost:9130/loan-storage/loans?limit=100&offset=0",
+		//"http://localhost:9130/loan-storage/loans?limit=100&offset=0",
+		"http://localhost:9130/bl-users/by-id/200?limit=100&offset=0",
 		nil)
 	if err != nil {
 		return err
