@@ -9,9 +9,9 @@ import (
 	"os"
 )
 
-const okapiUrl = "http://ec2-18-232-163-248.compute-1.amazonaws.com:9130"
-
 //const okapiUrl = "http://localhost:9130"
+//const okapiUrl = "http://ec2-18-232-163-248.compute-1.amazonaws.com:9130"
+const okapiUrl = "https://folio-snapshot-okapi.aws.indexdata.com"
 
 func main() {
 	fmt.Printf("Okapi URL: %s\n", okapiUrl)
@@ -28,11 +28,12 @@ func main() {
 }
 
 func login() (string, error) {
+
 	client := &http.Client{}
 
 	m := map[string]string{
-		"username": "diku_admin",
 		//"username": "admin",
+		"username": "diku_admin",
 		"password": "admin",
 	}
 	json, err := json.Marshal(m)
@@ -59,11 +60,13 @@ func login() (string, error) {
 }
 
 func retrieveLoans(token string) error {
+
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET",
-		okapiUrl+"/loan-storage/loans?limit=100&offset=0",
 		//okapiUrl+"/bl-users/by-id/200?limit=100&offset=0",
+		//okapiUrl+"/loan-storage/loans?limit=100&offset=0",
+		okapiUrl+"/service-points?limit=100&offset=0",
 		nil)
 	if err != nil {
 		return err
