@@ -11,7 +11,8 @@ import (
 
 //const okapiUrl = "http://localhost:9130"
 //const okapiUrl = "http://ec2-18-232-163-248.compute-1.amazonaws.com:9130"
-const okapiUrl = "https://folio-snapshot-okapi.aws.indexdata.com"
+//const okapiUrl = "https://folio-snapshot-okapi.aws.indexdata.com"
+const okapiUrl = "https://folio-release-okapi.aws.indexdata.com"
 
 func main() {
 	fmt.Printf("Okapi URL: %s\n", okapiUrl)
@@ -20,7 +21,12 @@ func main() {
 		printError(err)
 		return
 	}
-	err = retrieveLoans(token)
+	//err = retrieveLoans(token)
+	//if err != nil {
+	//        printError(err)
+	//        return
+	//}
+	err = testOkapi(token)
 	if err != nil {
 		printError(err)
 		return
@@ -67,6 +73,39 @@ func retrieveLoans(token string) error {
 		//okapiUrl+"/bl-users/by-id/200?limit=100&offset=0",
 		//okapiUrl+"/loan-storage/loans?limit=100&offset=0",
 		okapiUrl+"/service-points?limit=100&offset=0",
+		nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("X-Okapi-Tenant", "diku")
+	req.Header.Add("X-Okapi-Token", token)
+	req.Header.Add("Accept", "application/json,text/plain")
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%s\n", body)
+
+	return nil
+}
+
+func testOkapi(token string) error {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET",
+		//okapiUrl+"/bl-users/by-id/200?limit=100&offset=0",
+		//okapiUrl+"/loan-storage/loans?limit=100&offset=0",
+		//okapiUrl+"/service-points?limit=100&offset=0",
+		//okapiUrl+"/_/proxy/modules",
+		okapiUrl+"/_/proxy/modules/mod-circulation-storage-3.3.0",
 		nil)
 	if err != nil {
 		return err
