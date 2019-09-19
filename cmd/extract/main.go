@@ -11,8 +11,9 @@ import (
 
 //const okapiUrl = "http://localhost:9130"
 //const okapiUrl = "http://ec2-18-232-163-248.compute-1.amazonaws.com:9130"
-//const okapiUrl = "https://folio-snapshot-okapi.aws.indexdata.com"
-const okapiUrl = "https://folio-release-okapi.aws.indexdata.com"
+const okapiUrl = "https://folio-snapshot-okapi.aws.indexdata.com"
+
+// const okapiUrl = "https://folio-release-okapi.aws.indexdata.com"
 
 func main() {
 	fmt.Printf("Okapi URL: %s\n", okapiUrl)
@@ -21,16 +22,16 @@ func main() {
 		printError(err)
 		return
 	}
-	//err = retrieveLoans(token)
-	//if err != nil {
-	//        printError(err)
-	//        return
-	//}
-	err = testOkapi(token)
+	err = retrieveLoans(token)
 	if err != nil {
 		printError(err)
 		return
 	}
+	// err = testOkapi(token)
+	// if err != nil {
+	// printError(err)
+	// return
+	// }
 }
 
 func login() (string, error) {
@@ -72,7 +73,8 @@ func retrieveLoans(token string) error {
 	req, err := http.NewRequest("GET",
 		//okapiUrl+"/bl-users/by-id/200?limit=100&offset=0",
 		//okapiUrl+"/loan-storage/loans?limit=100&offset=0",
-		okapiUrl+"/service-points?limit=100&offset=0",
+		// okapiUrl+"/service-points?limit=100&offset=0",
+		okapiUrl+"/erm/sas?filters=items.reference%3d301-3707&stats=true",
 		nil)
 	if err != nil {
 		return err
@@ -104,8 +106,9 @@ func testOkapi(token string) error {
 		//okapiUrl+"/bl-users/by-id/200?limit=100&offset=0",
 		//okapiUrl+"/loan-storage/loans?limit=100&offset=0",
 		//okapiUrl+"/service-points?limit=100&offset=0",
-		//okapiUrl+"/_/proxy/modules",
-		okapiUrl+"/_/proxy/modules/mod-circulation-storage-3.3.0",
+		// okapiUrl+"/_/proxy/modules",
+		// okapiUrl+"/_/proxy/modules/mod-circulation-storage-3.3.0",
+		okapiUrl+"/_/proxy/modules/mod-agreements-1.11.0-SNAPSHOT.123",
 		nil)
 	if err != nil {
 		return err
